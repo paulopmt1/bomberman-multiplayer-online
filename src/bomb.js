@@ -1,7 +1,7 @@
 import { CONSTANTS } from './constant.js';
 import { generateRandomString } from './random.js';
 
-function buildBomb(position, onExplodeFunction, onEndOfLiveFunction) {
+function buildBomb(position, onExplode, onEndOfLive) {
 
     const bomb = {
         id: generateRandomString(10),
@@ -11,8 +11,9 @@ function buildBomb(position, onExplodeFunction, onEndOfLiveFunction) {
         state: 'armed',
         color: 'black',
         bombTimer: 0,
-        onExplode: onExplodeFunction,
-        onEndOfLive: onEndOfLiveFunction
+        onExplode,
+        onEndOfLive,
+        checkPositionIsOnBombExplosionPath,
     }
 
     const bombTimerIncrementInMs = 100
@@ -42,7 +43,7 @@ function checkBombExploded(bomb) {
 }
 
 function checkBombEndOfLife(bomb) {
-
+    
     if (bomb.bombTimer > CONSTANTS.BOMB_DEFAULT_TIME_TO_LIVE) {
         
         if (typeof bomb.onEndOfLive === 'function') {
@@ -51,6 +52,19 @@ function checkBombEndOfLife(bomb) {
 
         return true;
     }
+}
+
+function checkPositionIsOnBombExplosionPath(position){
+
+    if (position.x >= this.x - this.fireReachBlocks && position.x <= this.x + this.fireReachBlocks && position.y == this.y){
+        return true
+    }
+
+    if (position.y >= this.y - this.fireReachBlocks && position.y <= this.y + this.fireReachBlocks && position.x == this.x){
+        return true
+    }
+
+    return false
 }
 
 export {

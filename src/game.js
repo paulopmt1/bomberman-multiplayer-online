@@ -1,6 +1,7 @@
 import state from './state.js'
 import { buildBomb } from './bomb.js'
 import { buildPlayer } from './player.js'
+import { CONSTANTS } from './constant.js'
 
 function deletePlayer(playerId) {
     delete state.players[playerId]
@@ -12,6 +13,10 @@ function addPlayer(playerId) {
 
 function movePlayer(playerId, direction) {
     let player = state.players[playerId]
+
+    if (! player){
+        return 
+    }
 
     switch (direction) {
         case 'ArrowDown':
@@ -37,6 +42,26 @@ function movePlayer(playerId, direction) {
     }
 }
 
+function checkPlayersHitByBomb(bomb){
+
+    for (const playerId in state.players) {
+        const player = state.players[playerId]
+
+        if (bomb.checkPositionIsOnBombExplosionPath({ x: player.x, y: player.y }) && player.isProtectedFromDeath == false){
+            player.color = 'purple'
+            player.healthPercentage -= CONSTANTS.BOMB_DAMAGE_PERCENT_ON_PLAYER
+            player.isProtectedFromDeath = true
+            
+            setTimeout(function(){
+                player.isProtectedFromDeath = false
+            },2000)
+
+            if (player.healthPercentage <= 0){
+                deletePlayer(playerId)
+            }
+        }
+    }
+}
 
 
 function removeBomb(bombId) {
@@ -45,6 +70,7 @@ function removeBomb(bombId) {
 
 function onExplodeBomb(bomb) {
     bomb.color = 'red'
+    checkPlayersHitByBomb(bomb)
 }
 
 function onBombEndOfLife(bomb) {

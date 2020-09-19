@@ -5,7 +5,8 @@ function buildPlayer(position, playerId) {
         color: getRandomPlayerColor(),
         x: position.x,
         y: position.y,
-        healthPercentage: 100
+        healthPercentage: 100,
+        isProtectedFromDeath: false
     }
 }
 
