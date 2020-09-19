@@ -57,7 +57,36 @@ function renderBombs(bombs, bombSize){
         canvasContext.fillStyle = bomb.color;
         canvasContext.fill();
         canvasContext.globalAlpha = 1
+
+        if (bomb.state == 'exploded'){
+            renderBombExplosionFires(bomb, bombSize)
+        }
     }
+}
+
+function renderBombExplosionFires(bomb, bombSize){
+    
+    for (let i = -bomb.fireReachBlocks; i <= bomb.fireReachBlocks; i++){
+        renderBombExplosionCircle(bomb.x -i, bomb.y, bombSize)
+    }
+
+    for (let i = -bomb.fireReachBlocks; i <= bomb.fireReachBlocks; i++){
+        renderBombExplosionCircle(bomb.x, bomb.y - i, bombSize)
+    }
+}
+
+function renderBombExplosionCircle(x, y, bombSize){
+    canvasContext.beginPath();
+    canvasContext.arc(
+        unitToPx(x), 
+        unitToPx(y), 
+        unitToPx(bombSize), 
+        0, 2 * Math.PI, false
+    );
+    
+    canvasContext.globalAlpha = 1
+    canvasContext.fillStyle = 'red';
+    canvasContext.fill();
 }
 
 let bombsAlpha = 0.5

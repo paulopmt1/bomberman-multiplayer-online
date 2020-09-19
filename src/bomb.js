@@ -1,45 +1,58 @@
 import { CONSTANTS } from './constant.js';
-import state from './state.js';
 import { generateRandomString } from './random.js';
 
-function addBomb(position, playerId){
-    const that = this
-    const bombId = generateRandomString(10)
+function buildBomb(position, onExplodeFunction, onEndOfLiveFunction) {
 
-    state.bombs[bombId] = {
+    const bomb = {
+        id: generateRandomString(10),
         x: position.x,
         y: position.y,
         fireReachBlocks: CONSTANTS.BOMB_DEFAULT_REACH_BLOCKS,
         state: 'armed',
         color: 'black',
-        playerId: playerId,
         bombTimer: 0,
-        id: bombId
+        onExplode: onExplodeFunction,
+        onEndOfLive: onEndOfLiveFunction
+    }
+
+    const bombTimerIncrementInMs = 100
+
+    const bombInterval = setInterval(function () {
+        bomb.bombTimer += bombTimerIncrementInMs;
+
+        checkBombExploded(bomb)
+        
+        if (checkBombEndOfLife(bomb)){
+            clearInterval(bombInterval)
+        }
+    }, bombTimerIncrementInMs)
+
+    return bomb
+}
+
+function checkBombExploded(bomb) {
+
+    if (bomb.bombTimer > CONSTANTS.BOMB_DEFAULT_TIME_TO_EXPLODE_IN_MS) {
+        bomb.state = 'exploded'
+
+        if (typeof bomb.onExplode === 'function') {
+            bomb.onExplode(bomb);
+        }
     }
 }
 
-function removeBomb(bombId){
-    delete state.bombs[bombId]
-}
+function checkBombEndOfLife(bomb) {
 
-setInterval(function(){
-
-    for (const bombId in state.bombs) {
-        const bomb = state.bombs[bombId]
-        bomb.bombTimer += 100;
-
-        if (bomb.bombTimer > CONSTANTS.BOMB_DEFAULT_TIME_TO_EXPLODE_IN_MS){
-            bomb.state = 'exploded'
-            bomb.color = 'red'
+    if (bomb.bombTimer > CONSTANTS.BOMB_DEFAULT_TIME_TO_LIVE) {
+        
+        if (typeof bomb.onEndOfLive === 'function') {
+            bomb.onEndOfLive(bomb);
         }
 
-        if (bomb.bombTimer > CONSTANTS.BOMB_DEFAULT_TIME_TO_LIVE){
-            removeBomb(bomb.id)
-        }
+        return true;
     }
-}, 100)
-
+}
 
 export {
-    addBomb
+    buildBomb
 }
