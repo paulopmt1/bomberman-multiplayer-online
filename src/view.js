@@ -1,10 +1,16 @@
-import { unitToPx } from './metric'
+import { unitToPx } from './metric.js'
 
 let canvasContext = false,
     mapCanvas = false
 
 function createMapCanvasElement(widthInPx, heightInPx){
-    mapCanvas = document.createElement('canvas')
+    mapCanvas = document.getElementById('canvas-game')
+
+    if (mapCanvas == null){
+        mapCanvas = document.createElement('canvas')
+    }
+
+    mapCanvas.id = 'canvas-game'
     mapCanvas.width = widthInPx
     mapCanvas.height = heightInPx
     canvasContext = mapCanvas.getContext('2d')
@@ -18,7 +24,9 @@ function renderPlayersOnMap(players, playerSize){
         throw Error('Canvas not initialized')
     }
 
-    players.forEach(player => {
+    for (const playerId in players) {
+        const player = players[playerId]
+
         canvasContext.beginPath();
         canvasContext.arc(
             unitToPx(player.x), 
@@ -26,9 +34,10 @@ function renderPlayersOnMap(players, playerSize){
             unitToPx(playerSize), 
             0, 2 * Math.PI, false
         );
+        
         canvasContext.fillStyle = player.color;
         canvasContext.fill();
-    });
+    };
 }
 
 function clear(){

@@ -2,13 +2,14 @@
   "name": "bomberman-multiplayer-online",
   "version": "1.0.0",
   "description": "An multiplayer online game of bomberman!",
-  "main": "./src/game.js",
+  "main": "./src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
     "dev": "webpack --mode=development --watch",
     "start": "webpack-dev-server --open"
   },
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/paulopmt1/bomberman-multiplayer-online.git"
@@ -26,6 +27,7 @@
     "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
-    "lodash": "^4.17.20"
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0"
   }
 }
