@@ -9,16 +9,24 @@ function movePlayer(playerId, direction){
 
     switch (direction){
         case 'ArrowDown':
-            player.y += 1;
+            if (player.y < state.map.height -1){
+                player.y += 1;
+            }
             break;
         case 'ArrowUp':
-            player.y -= 1;
+            if (player.y > 1){
+                player.y -= 1;
+            }
             break;
         case 'ArrowRight':
-            player.x += 1;
+            if (player.x < state.map.width -1){
+                player.x += 1;
+            }
             break;
         case 'ArrowLeft':
-            player.x -= 1;
+            if (player.x > 1){
+                player.x -= 1;
+            }
             break;
     }
 
