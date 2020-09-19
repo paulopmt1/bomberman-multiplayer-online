@@ -40,6 +40,47 @@ function renderPlayersOnMap(players, playerSize){
     };
 }
 
+function renderBombs(bombs, bombSize){
+
+    for (const bombId in bombs) {
+        const bomb = bombs[bombId]
+
+        canvasContext.beginPath();
+        canvasContext.arc(
+            unitToPx(bomb.x), 
+            unitToPx(bomb.y), 
+            unitToPx(bombSize), 
+            0, 2 * Math.PI, false
+        );
+        
+        canvasContext.globalAlpha = bombsAlpha
+        canvasContext.fillStyle = bomb.color;
+        canvasContext.fill();
+        canvasContext.globalAlpha = 1
+    }
+}
+
+let bombsAlpha = 0.5
+let bombsEffectDirection = 'increase'
+setInterval(() => {
+    if (bombsEffectDirection == 'increase'){
+        bombsAlpha += 0.1
+    }else{
+        bombsAlpha -= 0.1
+    }
+
+    if (bombsAlpha >= 1){
+        bombsEffectDirection = 'decrease'
+    }
+
+    if (bombsAlpha < 0.5){
+        bombsEffectDirection = 'increase'
+    }
+},100)
+
+
+
+
 function clear(){
     canvasContext.clearRect(0, 0, mapCanvas.width, mapCanvas.height);
 }
@@ -47,5 +88,6 @@ function clear(){
 export default {
     createMapCanvasElement,
     renderPlayersOnMap,
+    renderBombs,
     clear
 }

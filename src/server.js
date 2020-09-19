@@ -21,19 +21,33 @@ socket.on('connection', (socket) => {
     console.log('nova conexao: ', socket.id)
     game.addPlayer(socket.id)
     socket.emit('get-start-map', state)
-    game.printGameState()
+    printGameState()
 
     socket.on('user-move', (movement) => {
         game.movePlayer(socket.id, movement)
-        notifyGameStateChangeForAllUsers()
+    })
+
+    socket.on('user-planted-bomb', () => {
+        const player = state.players[socket.id]
+        game.addBomb({x: player.x, y: player.y}, player.id)
     })
     
     socket.on('disconnect', (reason) => {
         console.log('user disconnected: ', socket.id)
         game.deletePlayer(socket.id)
-        notifyGameStateChangeForAllUsers()
     })
 })
+
+// state.onChange(() => {
+    setInterval(function(){
+        notifyGameStateChangeForAllUsers()
+        printGameState()
+    },100)
+// })
+
+function printGameState() {
+    console.log('actual game state: ', state)
+}
 
 function notifyGameStateChangeForAllUsers(){
     activeConnections.forEach((socket) => {

@@ -11,6 +11,10 @@ function render(){
         gameState.players, 
         gameState.gameAttributes.playerSize
     )
+    view.renderBombs(
+        gameState.bombs, 
+        gameState.gameAttributes.bombSize
+    )
 
     window.requestAnimationFrame(render)
 }
@@ -58,6 +62,10 @@ keyboard.addKeyListener('ArrowRight', () => {
 
 keyboard.addKeyListener('ArrowLeft', () => {
     socket.emit('user-move', 'ArrowLeft')
+})
+
+keyboard.addKeyListener('Space', () => {
+    socket.emit('user-planted-bomb')
 })
 
 keyboard.startListening()
