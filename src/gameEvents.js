@@ -12,10 +12,14 @@ function on(eventName, callbackFunction){
 
 function publish(eventName, eventData){
     let eventList = eventListeners[eventName]
+    
+    if (eventListeners['*']){
+        eventList = typeof eventList == 'object' ? eventList.join(eventListeners['*']) : eventListeners['*']
+    }
 
     if (typeof eventList == 'object'){
-        eventList.forEach(element => {
-            element.call(this, eventData)
+        eventList.forEach(functionToCall => {
+            functionToCall.call(this, eventName, eventData)
         });
     }
 }

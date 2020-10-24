@@ -40,17 +40,11 @@ socket.on('connection', (socket) => {
     })
 })
 
-gameEvents.on('bomb-exploded', (data) => {
-    notifyGameEventForAllUsers('bomb-exploded', data)
-})
-
-function notifyGameEventForAllUsers(eventName, data) {
+gameEvents.on('*', (eventName, data) => {
     activeConnections.forEach((socket) => {
         socket.emit(eventName, data)
     })
-
-    console.log('novo evento: ', eventName)
-}
+})
 
 // state.onChange(() => {
 setInterval(function () {
