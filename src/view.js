@@ -1,3 +1,4 @@
+import { Sprite } from './gameObjects/sprite.js'
 import { unitToPx } from './metric.js'
 
 let canvasContext = false,
@@ -27,17 +28,40 @@ function renderPlayersOnMap(players, playerSize){
     for (const playerId in players) {
         const player = players[playerId]
 
-        canvasContext.beginPath();
-        canvasContext.arc(
-            unitToPx(player.x), 
-            unitToPx(player.y), 
-            unitToPx(playerSize), 
-            0, 2 * Math.PI, false
-        );
-        
-        canvasContext.fillStyle = player.color;
-        canvasContext.fill();
+        if (! player.visualObject) {
+            let playerObject = newPlayer(unitToPx(player.x), unitToPx(player.y))
+            playerObject.then((object) => {
+                player.visualObject = object
+                object.update()
+                object.draw(canvasContext)
+            })
+        }else {
+            player.visualObject.update()
+            player.visualObject.draw(canvasContext)
+        }
     };
+}
+
+function newPlayer(x, y) {
+  var player;
+  var playerSpritesheet = new Image();
+  playerSpritesheet.src = "assets/sprites/bomberman-walking-front.png";
+
+  return new Promise((resolve, reject) => {
+    playerSpritesheet.onload = () => {
+      player = new Sprite(
+        playerSpritesheet,
+        x-20,
+        y-25,
+        112, //total width of spritesheet image in pixels
+        46, //total height of spritesheet image in pixels
+        300, //time(in ms) duration between each frame change (experiment with it to get faster or slower animation)
+        4
+      );
+
+      resolve(player);
+    };
+  });
 }
 
 function renderBombs(bombs, bombSize){
