@@ -19,6 +19,8 @@ function movePlayer(playerId, direction) {
         return 
     }
 
+    player.moveDirection = direction
+
     switch (direction) {
         case 'ArrowDown':
             if (player.y < state.map.height - 1) {

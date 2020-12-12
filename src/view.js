@@ -19,7 +19,7 @@ function createMapCanvasElement(widthInPx, heightInPx){
     document.body.appendChild(mapCanvas)
 }
 
-function renderPlayersOnMap(players, playerSize){
+async function renderPlayersOnMap(players, playerSize){
 
     if (canvasContext === false){
         throw Error('Canvas not initialized')
@@ -29,16 +29,19 @@ function renderPlayersOnMap(players, playerSize){
         const player = players[playerId]
 
         if (! player.visualObject) {
-            let playerObject = newPlayer(unitToPx(player.x), unitToPx(player.y))
-            playerObject.then((object) => {
-                player.visualObject = object
-                object.update()
-                object.draw(canvasContext)
-            })
-        }else {
-            player.visualObject.update()
-            player.visualObject.draw(canvasContext)
+            let playerObject = await newPlayer(player.x, player.y)
+            player.visualObject = playerObject
         }
+
+        player.visualObject.flip = false
+        
+        if (player.moveDirection == 'ArrowLeft') {
+            player.visualObject.flip = true
+        }
+        
+        player.visualObject.y = player.y
+        player.visualObject.x = player.x
+        player.visualObject.play(canvasContext)
     };
 }
 
@@ -51,8 +54,8 @@ function newPlayer(x, y) {
     playerSpritesheet.onload = () => {
       player = new Sprite(
         playerSpritesheet,
-        x-20,
-        y-25,
+        x,
+        y,
         112, //total width of spritesheet image in pixels
         46, //total height of spritesheet image in pixels
         300, //time(in ms) duration between each frame change (experiment with it to get faster or slower animation)
