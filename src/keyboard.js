@@ -8,6 +8,12 @@ function startListening(){
             keyListners[e.code]()
         }
     })
+
+    document.addEventListener('keyup', () => {
+        if (keyListners['releaseKeys']) {
+            keyListners['releaseKeys']()
+        }
+    })
 }
 
 function addKeyListener(keyCode, fn){

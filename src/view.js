@@ -1,8 +1,10 @@
 import { Sprite } from './gameObjects/sprite.js'
+import { Animation } from './animations/animation.js'
+import { getImage } from './loader/fileManager.js'
 import { unitToPx } from './metric.js'
 
-let canvasContext = false,
-    mapCanvas = false
+window.canvasContext = false
+window.mapCanvas = false
 
 function createMapCanvasElement(widthInPx, heightInPx){
     mapCanvas = document.getElementById('canvas-game')
@@ -28,44 +30,60 @@ async function renderPlayersOnMap(players, playerSize){
     for (const playerId in players) {
         const player = players[playerId]
 
-        if (! player.visualObject) {
-            let playerObject = await newPlayer(player.x, player.y)
-            player.visualObject = playerObject
+        if (! player.sprite) {
+            const animationWalk = new Animation(
+                getImage('player1'),
+                player.x,
+                player.y,
+                0, // offset x on spritesheet
+                57, // offset y on spritesheet
+                528, //total width of spritesheet image in pixels
+                57, //total height of spritesheet image in pixels
+                120, //time(in ms) duration between each frame change (experiment with it to get faster or slower animation)
+                8
+            );
+
+            const animationIdle = new Animation(
+                getImage('player1'),
+                player.x,
+                player.y,
+                0, // offset x on spritesheet
+                0, // offset y on spritesheet
+                264, //total width of spritesheet image in pixels
+                57, //total height of spritesheet image in pixels
+                200, //time(in ms) duration between each frame change (experiment with it to get faster or slower animation)
+                4
+            );
+            
+            player.sprite = new Sprite(player.x, player.y)
+            player.sprite.addAnimation('player-walk-right', animationWalk)
+            player.sprite.addAnimation('player-idle', animationIdle)
+            
+            player.moveDirection = 'stopped'
+            player.sprite.play('player-idle')
         }
 
-        player.visualObject.flip = false
+        player.sprite.actualAnimation.flip = false
+
         
+        if (player.moveDirection == 'ArrowLeft' || player.moveDirection == 'ArrowRight') {
+            player.sprite.play('player-walk-right')
+        }
+
         if (player.moveDirection == 'ArrowLeft') {
-            player.visualObject.flip = true
+            player.sprite.actualAnimation.flip = true
+        }
+
+        if (player.moveDirection == 'stopped'){
+            player.sprite.play('player-idle')
         }
         
-        player.visualObject.y = player.y
-        player.visualObject.x = player.x
-        player.visualObject.play(canvasContext)
+        player.sprite.y = player.y
+        player.sprite.x = player.x
+        player.sprite.updateAnimation()
     };
 }
 
-function newPlayer(x, y) {
-  var player;
-  var playerSpritesheet = new Image();
-  playerSpritesheet.src = "assets/sprites/bomberman-walking-front.png";
-
-  return new Promise((resolve, reject) => {
-    playerSpritesheet.onload = () => {
-      player = new Sprite(
-        playerSpritesheet,
-        x,
-        y,
-        112, //total width of spritesheet image in pixels
-        46, //total height of spritesheet image in pixels
-        300, //time(in ms) duration between each frame change (experiment with it to get faster or slower animation)
-        4
-      );
-
-      resolve(player);
-    };
-  });
-}
 
 function renderBombs(bombs, bombSize){
 

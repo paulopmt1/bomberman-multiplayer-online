@@ -1,46 +1,30 @@
-import { unitToPx } from "../metric"
+import { unitToPx } from "../metric";
 
-function Sprite(spriteSheet, x, y, width, height, timePerFrameInMs, numberOfFrames) {
-    this.spriteSheet = spriteSheet
+function Sprite(x, y) {
+    this.animations = {}
+    this.actualAnimation = {}
     this.x = x
     this.y = y
-    this.width = width
-    this.height = height
-    this.timePerFrameInMs = timePerFrameInMs
-    this.numberOfFrames = numberOfFrames
-    this.flip = false
-    this.flop = false
 
-    this.frameIndex = 0
-    this.lastUpdate = Date.now()
+    this.addAnimation = (animationKey, animation) => {
+        this.animations[animationKey] = animation
+    }
 
-    this.play = (canvasContext) => {
-        canvasContext.save();
-
-        if(Date.now() - this.lastUpdate >= this.timePerFrameInMs) {
-            this.frameIndex++;
-
-            if(this.frameIndex >= this.numberOfFrames) {
-                this.frameIndex = 0;
-            }
-
-            this.lastUpdate = Date.now();
-        }
-
-        let flipScale, flopScale = 1;
-    
+    this.updateAnimation = () => {
         canvasContext.save()
         
-        if(this.flip) {
+        let flipScale, flopScale = 1;
+
+        if(this.actualAnimation.flip) {
             flipScale = -1; 
-            canvasContext.translate(this.width / this.numberOfFrames, 0);
+            canvasContext.translate(this.actualAnimation.width / this.actualAnimation.numberOfFrames, 0);
         } else {
             flipScale = 1;
         }
         
-        if(this.flop) {
+        if(this.actualAnimation.flop) {
             flopScale = -1; 
-            canvasContext.translate(0, this.width / this.numberOfFrames);
+            canvasContext.translate(0, this.actualAnimation.width / this.actualAnimation.numberOfFrames);
         } else {
             flopScale = 1;
         }
@@ -48,22 +32,37 @@ function Sprite(spriteSheet, x, y, width, height, timePerFrameInMs, numberOfFram
         canvasContext.scale(flipScale, flopScale);
 
         canvasContext.drawImage(
-            this.spriteSheet,
-            (this.frameIndex * this.width) / this.numberOfFrames,
-            0,
-            this.width / this.numberOfFrames,
-            this.height,
-            unitToPx(this.x) * flipScale,
-            unitToPx(this.y) * flopScale,
-            this.width / this.numberOfFrames,
-            this.height
+            this.actualAnimation.spriteSheet,
+            this.actualAnimation.offsetX + (this.actualAnimation.frameIndex * this.actualAnimation.width) / this.actualAnimation.numberOfFrames,
+            this.actualAnimation.offsetY,
+            this.actualAnimation.width / this.actualAnimation.numberOfFrames,
+            this.actualAnimation.height,
+            unitToPx(this.x - 1) * flipScale,
+            unitToPx(this.y - 1) * flopScale,
+            this.actualAnimation.width / this.actualAnimation.numberOfFrames,
+            this.actualAnimation.height
         );
 
         canvasContext.restore();
-    };
+    }
 
+    this.play = function(animationKey) {
+
+        if (this.animations.hasOwnProperty(animationKey)) {
+            this.stop()
+            this.actualAnimation = this.animations[animationKey]
+            this.actualAnimation.play()
+        }
+    }
+
+    this.stop = function() {
+        if (this.actualAnimation.hasOwnProperty('stop')) {
+            this.actualAnimation.stop()
+        }
+    }
+
+
+    return this
 }
 
-export {
-    Sprite
-}
+export { Sprite };
