@@ -34,22 +34,22 @@ function movePlayer(playerId, direction) {
     switch (direction) {
         case 'ArrowDown':
             if (player.y < state.map.height - 1) {
-                player.y += 0.4;
+                player.y += 0.3;
             }
             break;
         case 'ArrowUp':
             if (player.y > 1) {
-                player.y -= 0.4;
+                player.y -= 0.3;
             }
             break;
         case 'ArrowRight':
             if (player.x < state.map.width - 1) {
-                player.x += 0.4;
+                player.x += 0.3;
             }
             break;
         case 'ArrowLeft':
             if (player.x > 1) {
-                player.x -= 0.4;
+                player.x -= 0.3;
             }
             break;
     }

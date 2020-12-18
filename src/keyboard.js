@@ -5,6 +5,7 @@ function startListening(){
     document.addEventListener('keydown', (e) => {
 
         if (keyListners[e.code]){
+            console.log('event')
             keyListners[e.code]()
         }
     })

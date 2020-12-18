@@ -16,7 +16,7 @@ function Animation(spriteSheet, x, y, offsetX, offsetY, width, height, timePerFr
     this.lastUpdate = Date.now()
 
     this.stop = () => {
-        console.log('stop animation')
+        // console.log('stop animation')
     }
 
     this.play = () => {
