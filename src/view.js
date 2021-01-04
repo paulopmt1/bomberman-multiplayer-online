@@ -66,11 +66,25 @@ async function renderPlayersOnMap(players, playerSize){
                 120, //time(in ms) duration between each frame change (experiment with it to get faster or slower animation)
                 8
             );
+
+
+            const animationWalkUp = new Animation(
+                getImage('player1'),
+                player.x,
+                player.y,
+                0, // offset x on spritesheet
+                173, // offset y on spritesheet
+                528, //total width of spritesheet image in pixels
+                57, //total height of spritesheet image in pixels
+                120, //time(in ms) duration between each frame change (experiment with it to get faster or slower animation)
+                8
+            );
             
             player.sprite = new Sprite(player.x, player.y)
             player.sprite.addAnimation('player-walk-right', animationWalk)
             player.sprite.addAnimation('player-idle', animationIdle)
             player.sprite.addAnimation('player-walk-down', animationWalkDown)
+            player.sprite.addAnimation('player-walk-up', animationWalkUp)
             
             player.moveDirection = 'stopped'
             player.sprite.play('player-idle')
@@ -89,6 +103,10 @@ async function renderPlayersOnMap(players, playerSize){
 
         if (player.moveDirection == 'ArrowDown') {
             player.sprite.play('player-walk-down')
+        }
+
+        if (player.moveDirection == 'ArrowUp') {
+            player.sprite.play('player-walk-up')
         }
 
         if (player.moveDirection == 'stopped'){
